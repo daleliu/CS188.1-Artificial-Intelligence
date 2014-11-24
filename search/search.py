@@ -14,6 +14,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
+import time
 
 class SearchProblem:
     """
@@ -69,6 +70,43 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s,s,w,s,w,w,s,w]
 
+class Node:
+    def __init__(self, state, path, priority):
+        self.state = state
+        self.path = path
+        self.priority = priority
+
+def baseSearch(problem, queue, get_heuristic=None, heuristic=None):
+    if isinstance(queue, util.Stack) or isinstance(queue, util.Queue):
+        queue.push(Node(problem.getStartState(), [], 0))
+    else:
+        queue.push(Node(problem.getStartState(), [], 0), 0)
+    visited = []
+
+    while not queue.isEmpty():
+        # get a new state
+        node = queue.pop()
+
+        # process the node if not yet visited
+        if node.state in visited:
+            continue
+        visited.append(node.state)
+
+        if problem.isGoalState(node.state):
+            # return path to here
+            return node.path
+        else:
+            # put in the stack the successors if not yet visited
+            for s in problem.getSuccessors(node.state):
+                if s[0] not in visited:
+                    if isinstance(queue, util.Stack) or isinstance(queue, util.Queue):
+                        queue.push(Node(s[0], node.path + [s[1]], 0))
+                    else:
+                        h = get_heuristic(s, node, heuristic, problem)
+                        queue.push(Node(s[0], node.path + [s[1]],  node.priority + s[2]), h)
+    return None
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first
@@ -83,20 +121,20 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return baseSearch(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return baseSearch(problem, util.Queue())
+
+def unif_h(succ, node, heuristic, problem):
+    return succ[2] + node.priority
 
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return baseSearch(problem, util.PriorityQueue(), unif_h)
 
 def nullHeuristic(state, problem=None):
     """
@@ -105,11 +143,13 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+def astar_h(succ, node, heuristic, problem):
+    return node.priority + succ[2] + heuristic(succ[0], problem)
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
-
+    queue = util.PriorityQueue()
+    return baseSearch(problem, util.PriorityQueue(), astar_h, heuristic)
 
 # Abbreviations
 bfs = breadthFirstSearch
