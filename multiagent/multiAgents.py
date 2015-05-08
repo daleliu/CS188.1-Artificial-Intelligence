@@ -15,6 +15,7 @@ import sys
 
 from game import Agent
 
+
 class ReflexAgent(Agent):
     """
       A reflex agent chooses an action at each choice point by examining
@@ -26,7 +27,6 @@ class ReflexAgent(Agent):
     """
     def __init__(self):
         self.tabu_list = []
-
 
     def getAction(self, gameState):
         """
@@ -101,6 +101,7 @@ class ReflexAgent(Agent):
 
         return closeFood + eatGhost + tabu + food
 
+
 def scoreEvaluationFunction(currentGameState):
     """
       This default evaluation function just returns the score of the state.
@@ -110,6 +111,7 @@ def scoreEvaluationFunction(currentGameState):
       (not reflex agents).
     """
     return currentGameState.getScore()
+
 
 class MultiAgentSearchAgent(Agent):
     """
@@ -130,6 +132,7 @@ class MultiAgentSearchAgent(Agent):
         self.index = 0 # Pacman is always agent index 0
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
+
 
 class MinimaxAgent(MultiAgentSearchAgent):
     """
@@ -192,6 +195,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 max_val = (action, res[1])
         return max_val
 
+
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
       Your minimax agent with alpha-beta pruning (question 3)
@@ -245,6 +249,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 return max_val
             alpha = max(alpha, max_val[1])
         return max_val
+
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
@@ -305,42 +310,46 @@ def betterEvaluationFunction(currentGameState):
 
       DESCRIPTION: <write something here so we know what you did>
     """
-    # Useful information you can extract from a GameState (pacman.py)
-    currPos = currentGameState.getPacmanPosition()
-    newFood = currentGameState.getFood()
-    ghostStates = currentGameState.getGhostStates()
-    currScaredTimes = [ghostState.scaredTimer for ghostState in ghostStates]
+    new_pos = currentGameState.getPacmanPosition()
+    new_food = currentGameState.getFood()
+    new_ghost_states = currentGameState.getGhostStates()
+    new_scared_times = [ghostState.scaredTimer for ghostState in new_ghost_states]
 
-    score = 0
-    if len(newFood.asList()) > 0:
-        dist = float("inf")
-        for foodPos in newFood.asList():
-            dist = min(dist, util.manhattanDistance(foodPos, currPos))
-        score += (1./dist)*10
+    metric = util.manhattanDistance
 
-    for index in range(len(ghostStates)):
-        dist = util.manhattanDistance(currPos, currentGameState.getGhostPosition(index+1))
-        if dist <= currScaredTimes[index]:
-            if dist == 0:
-                score += 800
-            else:
-                score += (1./dist)*300
-        elif dist <= 3:
-            score += dist*10
-        else:
-            score += dist
+    ghost_distances = [metric(new_pos, gh.getPosition()) for gh in new_ghost_states]
+    if any([dist == 0 for dist in ghost_distances]):
+        return -999
 
-    if currentGameState.isWin():
-        score += 10000
+    score = currentGameState.getScore()
+    food_count = currentGameState.getNumFood()
+    if food_count == 0:
+        return 9999
 
-    capsules = currentGameState.getCapsules()
-    if currPos in capsules:
-        score += 200
-
+    near_food_dist = 100
+    for i, item in enumerate(new_food):
+        for j, foodItem in enumerate(item):
+            near_food_dist = min(near_food_dist, metric(new_pos, (i, j)) if foodItem else 100)
+    ghost_fun = lambda d: -20 + d**4 if d < 3 else -1.0/d
+    ghost_k = sum([ghost_fun(ghost_distances[i]) if new_scared_times[i] < 1 else 0 for i in range(len(ghost_distances))])
+    near_food_bonus = 1.0 / near_food_dist
+    food_rem_punish = -1.5
+    pelete_re_punish = -8 if all((t == 0 for t in new_scared_times)) else 0
+    if all((t > 0 for t in new_scared_times)):
+        ghost_k *= (-1)
+    pelets = currentGameState.getCapsules()
+    pelets.sort()
+    near_pelet_dist = 100
+    if len(pelets) > 0:
+        near_pelet_dist = min(near_pelet_dist, min([metric(new_pos, pelet) for pelet in pelets]))
+    near_pelet_bonus = 1.0/near_pelet_dist
+    peletsRemaining = len(pelets)
+    score = score + near_food_bonus + 2 * ghost_k + 10 * near_pelet_bonus + food_rem_punish * food_count + peletsRemaining * pelete_re_punish
     return score
 
 # Abbreviation
 better = betterEvaluationFunction
+
 
 class ContestAgent(MultiAgentSearchAgent):
     """
