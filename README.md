@@ -14,7 +14,7 @@ This repository contains my solutions for the projects for the
 Grades
 ------
 
-**Project 1: Search**
+**[Project 1: Search](https://github.com/drolando/CS188.1-Artificial-Intelligence/tree/master/search)**
 
     Question q1: 2/2
     Question q2: 2/2
@@ -28,7 +28,7 @@ Grades
     -------------------
     Total: 21/20
 
-**Project 2: Multi-Agent Pacman**
+**[Project 2: Multi-Agent Pacman](https://github.com/drolando/CS188.1-Artificial-Intelligence/tree/master/multiagent)**
 
     Question q1: 3/3
     Question q2: 4/4
@@ -39,7 +39,7 @@ Grades
     -------------------
     Total: 20/20
 
-**Project 3:**
+**[Project 3: Reinforcement Learning](https://github.com/drolando/CS188.1-Artificial-Intelligence/tree/master/reinforcement)**
 
     Question q1: 0/6
     Question q2: 0/1
