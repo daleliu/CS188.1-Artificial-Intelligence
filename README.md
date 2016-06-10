@@ -41,16 +41,16 @@ Grades
 
 **[Project 3: Reinforcement Learning](https://github.com/drolando/CS188.1-Artificial-Intelligence/tree/master/reinforcement)**
 
-    Question q1: 0/6
-    Question q2: 0/1
-    Question q3: 0/5
-    Question q4: 0/5
-    Question q5: 0/3
-    Question q6: 0/1
-    Question q7: 0/1
-    Question q8: 0/3
+    Question q1: 6/6
+    Question q2: 1/1
+    Question q3: 5/5
+    Question q4: 5/5
+    Question q5: 3/3
+    Question q6: 1/1
+    Question q7: 1/1
+    Question q8: 3/3
     ----------------
-    Total: 0/25
+    Total: 25/25
 
 Certificate:
 ------------
